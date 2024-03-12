@@ -5,12 +5,12 @@ using namespace std;
 
 class MetodoRadix {
 private:
-    int* numeros;
+    int numeros[50];
     int numDatos;
     string preguntaIteracion;
     string preguntaSigno;
 
-    void mostrarIteracion(int iteracion, int* arreglo) const;
+    void mostrarIteracion(int iteracion, int arreglo[]) const;
 
 public:
     MetodoRadix();
@@ -31,8 +31,6 @@ void MetodoRadix::ingresarDatos() {
         exit(1);
     }
 
-    numeros = new int[numDatos];
-
     cout << "Ingresa los datos separados por espacios: ";
     for (int i = 0; i < numDatos; ++i) {
         cin >> numeros[i];
@@ -41,7 +39,6 @@ void MetodoRadix::ingresarDatos() {
     cout << "Los valores son positivos?";
     cin >> preguntaSigno;
 
-    // convierte a minusculas
     for (char& c : preguntaSigno) {
         c = tolower(c);
     }
@@ -55,7 +52,6 @@ void MetodoRadix::ingresarDatos() {
 }
 
 void MetodoRadix::imprimirArreglo() const {
-
     if (preguntaSigno == "no") {
         for (int i = numDatos - 1; i >= 0; --i) {
             cout << -numeros[i] << " ";
@@ -68,7 +64,7 @@ void MetodoRadix::imprimirArreglo() const {
     }
 }
 
-void MetodoRadix::mostrarIteracion(int iteracion, int* arreglo) const {
+void MetodoRadix::mostrarIteracion(int iteracion, int arreglo[]) const {
     for (int i = 0; i < numDatos; ++i) {
         cout << arreglo[i] << " ";
     }
@@ -77,15 +73,16 @@ void MetodoRadix::mostrarIteracion(int iteracion, int* arreglo) const {
 
 void MetodoRadix::Radix() {
     int i, maximoAbsoluto = abs(numeros[0]), exponente = 1;
-    int* arregloAuxiliar = new int[numDatos];
+    int arregloAuxiliar[50];
 
-    // encuentra el valor maximo en el arreglo
-    for (i = 1; i < numDatos; i++)
-        if (abs(numeros[i]) > maximoAbsoluto)
+    // valor maximo en el arreglo
+    for (i = 1; i < numDatos; i++) {
+        if (abs(numeros[i]) > maximoAbsoluto) {
             maximoAbsoluto = abs(numeros[i]);
+        }
+    }
 
     while (maximoAbsoluto / exponente > 0) {
-        // inicializa un arreglo para contar la frecuencia de cada digito
         int conteo[10] = { 0 };
 
         // cuenta la frecuencia de cada digito en la posicion actual
@@ -94,38 +91,34 @@ void MetodoRadix::Radix() {
             conteo[indice]++;
         }
 
-        // ajusta el conteo para tener la posicion correcta de cada digito en el arreglo ordenado
-        for (i = 1; i < 10; i++)
+        for (i = 1; i < 10; i++) {
             conteo[i] += conteo[i - 1];
+        }
 
-        // construye el arreglo ordenado basado en el conteo de cada digito
+        // ordena el arreglo en base al conteo de cada numero
         for (i = numDatos - 1; i >= 0; i--) {
             int indice = abs(numeros[i]) / exponente % 10;
             arregloAuxiliar[--conteo[indice]] = numeros[i];
         }
 
-        // copia el arreglo ordenado de regreso al arreglo original
-        for (i = 0; i < numDatos; i++)
+        // el arreglo ordenado se copia al arreglo original
+        for (i = 0; i < numDatos; i++) {
             numeros[i] = arregloAuxiliar[i];
+        }
 
         if (preguntaIteracion == "si") {
             mostrarIteracion(exponente / 10, numeros);
         }
-
-        // mover al siguiente digita hacia la izquierda
+        // ahora el exponente se mueve a la izquierda y asi hasta que no haya nada mas
         exponente *= 10;
     }
 
     if (preguntaSigno == "no") {
         for (int i = 0; i < numDatos; i++) {
-            numeros[i] = abs(numeros[i]); // restaura el signo original
+            numeros[i] = abs(numeros[i]);
         }
     }
-
-    delete[] arregloAuxiliar;
 }
-
-
 
 int main() {
     MetodoRadix ordenamiento;
